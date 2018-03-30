@@ -1,0 +1,119 @@
+------ AN INTRODUCTION TO COMPONENTS
+- Use Vue.component(<tagName>, {}) to create a component
+    - The tagName parameter is what will be used as the name 
+      of the new HTML element. 
+    - Be sure to use unique names for this or a prefix. 
+    - The second parameter is an object that is very similar 
+      to the one we pass to a new Vue instance.
+        - The only difference is that the data property is 
+          not an object but a function that returns an object.           
+
+EXAMPLE: 
+    Vue.component('my-component', {
+        data: function () {
+            return {
+                status: 'Critical'
+            }
+        },
+        methods: {
+        },
+        computed: {
+        },
+        template: '<p>Server Status: {{ status }}</p>'
+    })
+
+    new Vue({
+        el: '#app'
+    });
+
+
+------ STORING DATA IN COMPONENTS WITH THE DATA METHOD 
+- Make sure that you don't use a shared data object 
+  in a component. 
+    - In otherwords, the data function should return a 
+      unique object in memory.
+    - If it returns an object that is not new then all 
+      instances of the component will use that same data. 
+
+
+------ REGISTERING COMPONENTS LOCALLY VS GLOBALLY 
+- When you call Vue.component() it registers the component globally 
+    - This means that is usable within any Vue instance template. 
+
+- To register a component locally: 
+    - Add it to the 'components' property of the Vue 
+      instance. 
+EXAMPLE: 
+    new Vue({
+        el: '#app',
+        components: {
+            'my-comp': {
+                data: function () {
+                    return {
+                    }
+                },
+                computed: {},
+                methods: {}
+            }
+        }
+    }); 
+
+
+------ THE "ROOT COMPONENT" IN APP.VUE FILE 
+- Basically main.js is not to be treated as the root component. 
+    - It's job is to simply call render on the root instance which 
+      is in the App.vue file. 
+    
+
+------ CREATING A COMPONENT 
+- Make a new .vue file 
+    - Should have a <template> <script> and <style> 
+    - Also there should be one container element that contains 
+      the whole component template. (Use a div wrapper or something)
+
+- Export an object in the <script> tag. 
+
+REGISTERING IT: 
+    - Either register it globally in the main.js file 
+      with Vue.component();
+    - Or you can register it locally 
+
+
+------ USING COMPONENTS 
+- You can use locally registered components inside of global ones. 
+- You can use directives on component elements just like normal 
+  HTML 
+- You can import components into .vue files in the <script> section 
+  just like normal ES6 JavaScript.
+
+
+------ NAMING COMPONENT TAGS AND DIRECTORY STRUCTURE 
+- You can put your .vue files in any directory structure. 
+(eg /components/global/Footer.vue, /components/Footer.vue, etc.)
+
+- You can name your component tags however you like if you 
+  are using the CLI build system.  
+    - hyphenated lowercase
+    - camelcase
+    - etc. 
+- If you are using the CDN approach then you have to use 
+  normal hyphenated-lowercase syntax (the same as regular DOM).
+
+
+------ SCOPING COMPONENT STYLES 
+- By default if you put styles in a component it will be 
+  applied globally like in a global stylesheet. 
+
+- We can make styles scoped to the component by adding the 
+  keyword 'scoped' to the <style> tag.
+    EXAMPLE: <style scoped></style>
+
+- This emulates the shadow DOM feature that will be 
+  used in the future. VueJS emulates it today.
+    - To scope styles Vue attaches a unique data attribute 
+      to the component's root element. (EXAMPLE: data-v-01093298)
+    - Then it creates and injects style tags in <head> 
+    - The styles then use attribute selectors to style the 
+      components using their data attribute. 
+
+

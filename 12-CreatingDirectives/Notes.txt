@@ -1,0 +1,131 @@
+------ UNDERSTANDING DIRECTIVES 
+- There are a lot of built in directives 
+    - v-bind, v-text, v-html, etc.
+- How do we create a custom directive?
+
+WAYS TO CREATE DIRECTIVES: 
+1) Use Vue.directive('<nameOfDirective>', <configObject>);
+    EXAMPLE: 
+    Vue.directive('example', {});
+    // will create v-example directive.
+
+
+------ HOW DIRECTIVES WORK - HOOK FUNCTIONS 
+- Directives have 5 methods you can use to hook into
+    - Similar to the Vue instance lifecycle hooks. 
+
+1) BIND: bind(<el>, <binding>, <vnode>)
+    - Fired as soon as directive is attached.
+        - It is executed as soon as we have access to the new 
+          directive. 
+    - <el>: Element the directive sits on 
+    - <binding>: The way the directive is set up
+        - read only
+        - not something you should change at runtime 
+    - <vnode>: The node in the virtual DOM
+        - read only 
+        - not something you should change at runtime 
+
+2) INSERTED: inserted(el, binding, vnode)
+    - Fired as soon as the element is inserted in the DOM
+    - same args as BIND 
+3) UPDATE: update(el, binding, vnode, oldVnode)
+    - Fired Once component is updated 
+        - without children ****
+    - same args as BIND except oldVnode
+    - oldVnode
+        - Since there is an update there is an oldVnode.
+4) COMPONENTUPDATED: update(el, binding, vnode, oldVnode)
+    - Fired Once component is updated 
+        - with children **** 
+        - once EVERYTHING has been updated 
+    - same args as UPDATE 
+5) UNBIND: unbind(el, binding, vnode)
+    - Fired once directive is removed 
+    - same args 
+
+- You are generally going to need BIND and UPDATED the most.
+    
+
+------ CREATING A SIMPLE DIRECTIVE 
+EXAMPLE: Setup global directive 
+- This directive turns the backgroundColor to green. 
+    // main.js
+    Vue.directive('highlight', {
+        bind: function (el, binding, vnode) {
+            el.style.backgroundColor = 'green';
+        }
+    });
+
+
+------ PASSING VALUES TO DIRECTIVES. 
+- You can pass values to the directive in the html
+    EXAMPLE: v-highlight="'green'"
+
+- And you can access the value passed via 'binding.value'
+    EXAMPLE: 
+    // main.js
+    Vue.directive('highlight', {
+        bind: function (el, binding, vnode) {
+            el.style.backgroundColor = binding.value;
+        }
+    });
+
+
+------ PASSING ARGUMENTS TO DIRECTIVES 
+- The syntax for passing arguments to directives is the ':'
+    EXAMPLE: v-bind:<arg>
+
+- We can pass argument with our own custom directives 
+  and access the argument via 'binding.arg'
+    - binding.arg returns a string of the argument passed.
+
+
+------ MODIFIERS FOR A CUSTOM DIRECTIVE 
+- Can check for modifiers on the binding.modifiers array.
+    EXAMPLE: binding.modifiers["<modifierToCheckFor>"]
+
+- After checking you can create logic based on that check.
+
+
+------ REGISTERING A LOCAL DIRECTIVE 
+- You can register a directive locally in the same way 
+  you register a component locally 
+    - On a component/instance there is the 'directives' 
+      property to which you can pass the name of the new 
+      directive and the config object.
+
+EXAMPLE: 
+    export default {
+        ...
+        directives: {
+            'local-highlight': {
+                bind() {
+                    // bind logic
+                    ...                    
+                }
+            }
+        }
+    }
+
+
+------ USING MULTIPLE MODIFIERS 
+- just chain the modifiers in the HTML 
+- Access the different modifiers via indexing the 
+  array of modifiers (binding.modifiers)
+
+
+------ PASSING MORE COMPLEX VALUES TO DIRECTIVES
+- You can pass in objects as values to directives 
+    - This way you can do more with the directive logic
+EXAMPLE: v-highlight="{mainColor: 'green', secondColor: 'blue'}"
+
+- After passing an object/array/etc. you can then use it 
+  normally by accessing binding.value.
+
+
+------ ASSIGNMENT
+- Build a directive that acts like v-on
+    - Doesn't need all the modifiers 
+- Should take the event argument and the value 
+  should be the function you want to execute.

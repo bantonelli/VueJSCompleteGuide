@@ -1,0 +1,12 @@
+.box {
+    height: 100px;
+    width: 100px;
+    background-color: blue;
+    transition-property: background-color;
+    transition-timing-function: ease-in-out;
+    transition-duration: 0.25s;
+}
+
+.red {
+    background-color: red;
+}

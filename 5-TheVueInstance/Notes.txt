@@ -1,0 +1,257 @@
+------ BASICS ABOUT THE VUEJS INSTANCE
+- The instance is basically a middleman between our 
+  business logic and the DOM. 
+
+- Can you have more than one Vue instance? 
+    - Yes we can. 
+
+- Can we access our Vue instance from outside? 
+    - Yes we can. 
+
+
+------ USING MULTIPLE VUE INSTANCES 
+- You can use 2 instances just by having a different  
+  'el' specified.
+    - Its perfectly fine to control multiple pieces on your 
+      page with multiple instances.
+
+- Inside of an instance you can only access the properties 
+  of the current instance. 
+    - In otherwords there is no connection between the 
+      two instances. 
+
+  
+------ ACCESSING THE VUE INSTANCE FROM OUTSIDE 
+- We can store the Vue instance in a variable 
+    - Usually the variable is 'vm' which stands for 
+      View Model, since VueJS represents the view model 
+      of the application. 
+
+- By simply referencing the variable that the instance is 
+  stored, we can change the Vue Instance properties from 
+  the outside. 
+
+  EXAMPLE: Update Vue Instance dataProp with vanilla JS.
+  var vm = new Vue({
+    data: {
+      myProperty: "Brandon"
+    }
+  });
+
+  vm.myProperty = "Antonelli";
+
+
+------ HOW VUEJS MANAGES YOUR DATA AND METHODS
+- VueJS proxies the data, methods, computed, etc. properties
+  to the top of the instance via its constructor. 
+    - Basically, the constructor takes the data object and 
+      uses it to construct the real Vue instance which 
+      has the data properties at the top level.
+    - We are simply passing an object as an argument to 
+      the constructor. 
+
+- The VueJS Instance does not have the properties we pass
+  to the constructor as we define them. 
+    - In the object construction process it sets up watchers for 
+      each of these properties so it can update the DOM.
+        - Also there are getters and setters set up to 
+          proxy those properties so they are accessible 
+          at the top level.
+    - It will only create watchers for properties we pass 
+      through the constructor. 
+        - Properties added to the Vue instance after 
+          instantiation will not be reactive and have watchers.
+        
+    
+------ A CLOSER LOOK AT $EL AND $DATA 
+$EL:
+  - This property on the Vue instance is basically a 
+    native HTML node. 
+      - It represents the selected element that we 
+        passed to the Vue constructor.
+
+$DATA: 
+  - This is the exact object we pass to the constructor 
+  - You can access it from the outside and it will work 
+    as expected.
+      - This is an alternative way to alter a data 
+        property from the outside. 
+      EXAMPLE: Update dataProp using $data 
+        var vm = new Vue({
+          data: {
+            myProperty: "Brandon"
+          } 
+        })
+
+        vm.$data.myProperty = "Antonelli"; 
+
+  
+------ PLACING $REFS AND USING THEM ON YOUR TEMPLATES 
+- To query a DOM node that is managed by a Vue instance 
+  you can simply place a 'ref' attribute on it. 
+    EXAMPLE: 
+      <div ref="myDiv"></div>
+    
+- ABOUT THE REF ATTRIBUTE  
+    - ref is NOT a native HTML attribute. It is provided/
+      recognized by Vue. 
+    - You can place this on any HTML element. 
+    - Vue will scan this attribute's value and use it as 
+      a reference to the DOM element. 
+
+- You can access the ref in JavaScript by using the $refs
+  property of the Vue instance.
+    - You can access the native DOM elements this way 
+      just like using document.getElementByClass, etc.  
+    
+    EXAMPLE: Getting an HTML element with $refs
+    vm.$refs.myDiv // will return the myDiv HTML element.
+    vm.$refs.myDiv.innerText = "Hello World" // Changes text 
+      - When you change elements this way it changes 
+        directly in the DOM. 
+      - It does not change the Vue virtual DOM.  
+        - So when a change is detected by Vue and it rerenders 
+          using the virtual DOM your change will be 
+          overridden.
+      - Due to this, you should use $refs primarily for 
+        reading/determining current DOM data ***
+    
+  
+------ MOUNTING A TEMPLATE 
+- How does the Vue Instance use its template? 
+    - Creates a JS version of the DOM (virtual DOM)
+    - Updates the virtual DOM 
+    - Rerenders actual DOM. 
+
+- How can you mount an HTML template after the 
+  constructor is called (instead of using 'el') 
+    - Vue instances come with a method called $mount 
+      that you can call and pass to it an HTML element. 
+    - Useful when you have to load the Vue instance 
+      on an element that is dynamic. 
+    EXAMPLE: 
+      vm.$mount('#app');
+  
+- THE $MOUNT METHOD: 
+  - It tells the Vue instance to render its 'template' property 
+    inside of the element passed. 
+      - If no element (el) is passed then it will render but not
+        be displayed. It will still be accessible though in JS. 
+  - The 'template' property of an instance can either be 
+    inferred or explicitly defined. 
+
+    EXAMPLE: Inferred template 
+    <!-- HTML -->
+    <div id="app">
+      <h1>Hello</h1>
+    </div>
+
+    // JS 
+    new Vue({
+      el: "app"
+    });
+
+    EXAMPLE: Explicit template 
+    <!-- HTML -->
+    <div id="app">
+    </div>
+
+    // JS 
+    new Vue({
+      el: "app",
+      template: "<h1>Hello</h1>"
+    });
+
+
+------ USING COMPONENTS 
+- What if we wanted to create a reusable component using  
+  the 'template' property?
+  - Use the Vue.component() method to register a new component 
+EXAMPLE: Register a component to ALL Vue instances.  
+  // JS
+  Vue.component('hello', {
+    template: "<h1>Hello</h1>"
+  });
+
+  <!-- HTML --> 
+  <hello></hello> 
+  - This will render the template specified where the 
+    hello tag is used. 
+
+
+------ HOW VUEJS UPDATES THE DOM 
+- Updating the real DOM takes a lot of resources and is 
+  slow. 
+- With this in mind Vue creates a Virtual DOM to observe 
+  and check for changes against. 
+
+BREAKDOWN: 
+1) Creates Virtual DOM 
+  - JavaScript representation of the actual DOM 
+2) Watches for changes on the Instance 
+3) If there is a change on the Instance diff the 
+   virtual DOM. 
+4) If there is a difference update the virtual DOM 
+   and then update the real DOM. 
+
+
+------ THE VUEJS INSTANCE LIFECYCLE 
+
+--- INITIAL INSTANTIATION CYCLE 
+1) Starts with the new Vue() constructor 
+
+2) Then execute: beforeCreate() 
+  - Hook that is executed before the instance is created.
+
+3) Initializes Data and Events that we pass to the instance
+
+4) Then calls: created()
+  - Hook that is called upon instance being created
+
+5) Compiles the template passed or el's template
+
+6) Then calls: beforeMount() 
+  - Called before the template is mounted to the real DOM
+
+7) Replace el with the compiled template.
+
+8) Mount compiled template to the DOM
+
+--- ONGOING LIFECYCLE  
+9) Data changed triggers: beforeUpdate()
+  - Hook that is called before rerendering the DOM 
+
+10) Re-rerender DOM
+
+11) Then calls: updated() 
+  - Hook that is called after rerendering the DOM
+  
+12) Before destroying an instance: calls beforeDestroy()
+
+13) After destroying an instance: calls destroyed() 
+
+
+------ THE VUEJS LIFECYCLE IN PRACTICE 
+- Each lifecycle hook is a direct property of the VueJS 
+  instance and can be customized via the constructor. 
+- You can destroy an instance by calling $destroy() on the instance. 
+EXAMPLE: 
+  new Vue({
+    el: "#app",
+    data: {
+      title: "Hola"
+    },
+    beforeCreate: function () {},
+    created: function () {},
+    beforeMount: function () {},
+    mounted: function () {},
+    beforeUpdate: function () {},
+    updated: function () {},
+    beforeDestroy: function () {},
+    destroyed: function () {},
+    methods: {
+      destroyMyInstance: function () {
+        this.$destroy();
+      }
+    }
+  })

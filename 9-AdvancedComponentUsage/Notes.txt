@@ -1,0 +1,107 @@
+------ SETTING UP MODULE PROJECT 
+- Did some basic setup with a Quote component and 
+  declared it as a local component in App.vue 
+
+
+------ PASSING CONTENT: THE SUBOPTIMAL SOLUTION 
+- Passing simple dynamic content can be done with props. 
+- However we can't pass HTML and other complicated content 
+  via this method. 
+
+------ PASSING CONTENT USING SLOTS
+- Slots allow us to pass full dynamic HTML 
+  into designated areas of a component template 
+
+USING SLOTS: 
+- A slot is a reserved HTML tag provided by VueJS  
+    - <slot></slot>
+- Any HTML passed inline to the component tag 
+  will be loaded into the slot. 
+    EXAMPLE: Loading h1 and p into a slot. 
+        // App.vue 
+        <app-component>
+            <h1>Some Stuff</h1>
+            <p>To pass</p>
+        </app-component>
+
+        //AppComponent.vue 
+        <template>
+            <slot></slot>
+        </template>
+
+
+------ HOW SLOT CONTENT GETS COMPILED AND STYLED. 
+- The child component styling is applied to the 
+  data being passed in. 
+    - Basically the styling is managed by the child.
+
+- The parent component manages the data being 
+  rendered and passed in. 
+
+
+------ USING MULTIPLE SLOTS (NAMED SLOTS)
+- You can use the 'name' attribute on a slot element 
+  to name it. 
+    <slot name="test"></slot>
+    <slot name="other"></slot>
+
+- Then you can specify the slot to render the 
+  passed elements using the slot name 
+    <app-component>
+        <h1 slot="test">Some Stuff</h1>
+        <p slot="other">To pass</p>
+    </app-component>
+  
+
+------ DEFAULT SLOTS AND SLOT DEFAULTS 
+- A slot without a name will automatically be 
+  treated as the default slot. 
+- If you don't put a name on a slot anything 
+  passed will always go in those unnamed slots.
+
+SETUP DEFAULT CONTENT FOR A SLOT: 
+- If you put a slot in a component anything 
+  defined in the child will be the default content. 
+- Whenever you insert content to the slot the 
+  default content will get overridden.
+
+
+------ DYNAMIC COMPONENTS 
+- You can dynamically render components using the 
+  <component> tag 
+- All you have to do is store a string of an 
+  actual local component. 
+    - Then bind that string to the 'is' attribute
+      on the <component> tag. 
+EXAMPLE: 
+    <component :is="'app-component'"></component>
+
+- Great way to create a tabs system. 
+    - IE: Click tab and load component in body.
+
+
+------ UNDERSTANDING DYNAMIC COMPONENT BEHAVIOR 
+- Dynamic components get destroyed when 
+  another component is rendered.
+- Basically any data that is stored will get 
+  lost by default. 
+
+
+------ KEEPING DYNAMIC COMPONENTS ALIVE 
+- You can use the <keep-alive> tag to wrap 
+  the <component> tag in order to stop the 
+  component from being destroyed. 
+
+
+------ DYNAMIC COMPONENT LIFECYCLE HOOK 
+- Since the destroyed() hook is no longer called 
+  what lifecycle hooks can we use? 
+- There are two hooks you can use 
+1) activated - called when the component is loaded 
+2) deactivated - called when different component is loaded
+
+
+------ DYNAMIC COMPONENT LIFECYCLE HOOK 
+- Pass content to each of the color components 
+    - Not as a prop 
+- Hook each component up to be loaded dynamically

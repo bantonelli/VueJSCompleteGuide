@@ -1,0 +1,247 @@
+------ VUEJS TEMPLATE SYNTAX AND INSTANCE 
+- methods can be called in template tags 
+    {{ myMethod() }}
+    - This is valid so long as the method returns 
+      a value that can be represented as a string.
+
+- You have access to everything in 'data' and 'methods'
+  inside of template.
+
+- VueJS proxies properties for us automatically and 
+  saves the Vue instance for us behind the scenes
+    - No need to save Vue instance in a variable
+    - No need to do {{ this.dataProp }}
+    - Can just do {{ dataProp }}
+
+
+------ ACCESSING DATA IN THE VUE INSTANCE
+- VueJS also proxies properties inside of the 
+  vue instance. 
+- Any property in 'data' or 'methods' can be 
+  accessed anywhere in the instance via 'this' keyword.
+
+
+------ BINDING TO ATTRIBUTES
+- No curly brace syntax on HTML attributes 
+- Instead use directives 
+- v-bind:<attr>="<dataProp>" 
+    - v-bind directive will bind the value of dataProp
+      to the attribute (attr) specified.
+
+
+------ UNDERSTANDING AND USING DIRECTIVES 
+- VueJS ships with a bunch of built in directives 
+- They are simply instructions for the template 
+- Generally pass arguments to directives using a colon 
+    EXAMPLE: v-bind:href 
+
+
+------ DISABLE RE-RENDERING WITH V-ONCE 
+- To stop a value from updating use the v-once directive
+    EXAMPLE: <div v-once>{{ dataProp }}</div>
+    - If dataProp is updated it wont be rerendered.
+
+
+------ HOW TO OUTPUT RAW HTML 
+- By default VueJS escapes HTML 
+    - It doesn't render HTML in strings provided to template 
+    - This helps prevent XSS attacks.
+
+- Use a directive called v-html to stop this behavior
+    EXAMPLE: 
+    <p v-html="dataProp"></p>
+    - This will render dataProp inside of paragraph tag 
+      without escaping HTML.
+
+  
+------ LISTENING TO EVENTS 
+- v-on:<event> directive allows us to pass data back to 
+  our Vue instance
+  - It listens to the event passed in order to do so
+  - You can use any DOM event. 
+
+
+------ GETTING EVENT DATA FROM EVENT OBJECT 
+- You can access the 'event' object automatically through 
+  the method called by 'v-on'.
+
+
+------ PASSING YOUR OWN ARGUMENTS WITH EVENTS 
+- Just call the method in v-on with parens
+  EXAMPLE: 
+    <p v-on:click:"someFunction(<customParam>)"></p>
+  
+- VueJS automatically fetches event argument and passes it 
+  through a variable '$event' 
+  - This named parameter is reserved for VueJS ******
+
+
+------ MODIFYING AN EVENT WITH EVENT MODIFIERS 
+- Modifiers execute after the event is emitted but before your 
+  own passed v-on function. 
+- Modifiers simply modify how the event is passed on to the function
+- There are a bunch of built in modifiers.
+  - There are a subset of modifiers for keyboard events 
+- You can chain modifiers.
+
+EXAMPLE: .stop modifier 
+  <p v-on:mousemove.stop="myFunction"></p>
+  - this will now stopPropogation on the mousemove event before it 
+    is passed to myFunction()
+
+
+------ WRITING JAVASCRIPT CODE IN THE TEMPLATES 
+- Any single statement / expression can be executed in an 
+  directive parameter or {{}}. 
+  - Everything except control-flow (loops, if/else, etc.) 
+    can be run directly in the template. 
+
+
+------ USING TWO WAY DATA BINDING 
+- Use the v-model directive to set up two-way data binding
+- The directive will update the property specified in the Vue instance
+  (on the 'data' property) as well as in the HTML.  
+- Basically this accomplishes the same as using both v-on in combination
+  with interpolation/v-bind.
+
+EXAMPLE:
+  <input type="text" v-model="name">
+  <p>{{ name }}</p>
+  
+
+------ REACTING TO CHANGES USING COMPUTED PROPERTIES 
+- When property A depends on the value of another property, 
+  use should make property A a computed property.
+
+- The VueJS instance has another option called 'computed' 
+  where you can put properties such as this. 
+    - Every property stored in 'computed' can be treated like the 
+      ones in the 'data' object. 
+
+- Computed properties only run when the properties they depend 
+  on are updated.
+    - This is because computed properties cache the result 
+      of a property, and are executed only when there is a change. 
+    - On the other hand, methods will run every time the DOM 
+      needs to be rerendered. 
+        - Basically use methods when you don't want to cache the 
+          result.
+  EXAMPLE: 
+    new Vue({
+      el: '#app',
+      data: {
+        firstName: "brandon",
+        lastName: "antonelli" 
+      },
+      computed: {
+        fullName: function () {
+          return firstName + lastName;
+        }
+      }
+      
+    });
+
+
+------ WATCHING FOR CHANGES: AN ALTERNATIVE TO COMPUTED PROPERTIES
+- In some cases you need to react to EVERY change.  
+  - Set up a 'watch' property to observe, then specify code to execute 
+    when the value changes. 
+  
+- Watch properties effectively allow an alternative to computed 
+  that is more flexible in behavior/functionality.
+    - For example, you can handle asynchronouse behavior using 'watch' 
+      but NOT with 'computed'. 
+      - The downside is that it is less performant. 
+      - Therefore it is best practice to use computed whenever you can. 
+
+
+------ SAVING TIME WITH SHORTHANDS 
+- v-on can be written like: 
+  @click="" (same as: v-on:click="")
+
+- v-bind can be written like:
+  :href="" (same as: v-bind:href="")
+
+
+------ DYNAMIC STYLING WITH CSS: PASSING OBJECTS 
+- Just use v-bind on the class attribute to bind css classes. 
+- The argument to pass to the directive is an object. 
+  - This object's keys are CSS classes and its values are booleans that 
+    determine whether the class should be applied. 
+
+EXAMPLE: (template) 
+  <div class="box" @click:"isRed = !isRed" :class="setRed"></div>
+  - This will set the .red-class if the setRed computed property 
+    has 'red-class' set to true.
+
+EXAMPLE: (JS) 
+  new Vue({
+    el: "#app",
+    data: {
+      isRed: false
+    },
+    computed: {
+      setRed: function () {
+        return {
+          'red-class': this.isRed,
+          'blue-class': !this.isRed
+        }
+      }
+    }
+  });
+
+
+------ DYNAMIC STYLING WITH CSS: USING NAMES 
+- If you want to dynamically choose which class to add 
+  (as opposed to deciding if to add a single class) you can 
+  pass a string of the class name directly instead of an object 
+  to the :class="" binding. 
+
+  EXAMPLE: (TEMPLATE) 
+  <div class="box" :class="colorClass"></div>
+  <input v-model="colorClass">
+
+  - Whatever you type in the input will be applied as a class 
+    on the box. 
+
+  EXAMPLE: (JS)
+  new Vue({
+    el: "#app",
+    data: {
+      colorClass: 'red-class'
+    }
+  });
+
+- With this way of doing it you can also pass multiple classes by 
+  using an array 
+
+  EXAMPLE: (TEMPLATE) 
+  <div class="box" :class="[colorClass, sizeClass]"></div>
+  <input v-model="colorClass"> 
+  <input v-model="sizeClass">
+
+  - Whatever you type in the inputs will be applied as classes 
+    on the box. 
+
+  EXAMPLE: (JS)
+  new Vue({
+    el: "#app",
+    data: {
+      colorClass: 'red-class',
+      sizeClass: 'large'
+    }
+  });
+
+------ DYNAMIC STYLING WITH CSS: USING STYLES DIRECTLY 
+- You can bind to the style attribute directly if you 
+  don't want to use CSS classes for some reason. 
+
+- You can pass an object:
+  - The syntax is pretty much the same, except that instead of 
+    classes you are working with rules as the keys 
+    (border, width, background-color, etc).
+
+- You can pass an array of rules as well. 
+
+- When binding to :style VueJS will automatically add browser 
+  prefixes as needed.  

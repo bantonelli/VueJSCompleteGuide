@@ -1,0 +1,108 @@
+------ CONDITIONAL RENDERING WITH V-IF 
+- You don't want to show everything in the template 
+  ALL the time. 
+    - This is conditional rendering. 
+
+- Using v-if:
+    - Just put the directive on the element you want to 
+      conditionally render.
+    - v-if attaches or detaches elements from the DOM.
+        - It doesn't just "hide" them.
+        - Furthermore, any child nodes will also be rendered 
+          conditionally.  
+    - v-else can be used in conjunction with v-if
+        - Simply use the directive on an element 
+        - It will automatically attach itself to the 
+          last v-if in the template.
+    - Use v-else-if if you need to check against more conditions.
+
+
+------ USING V-IF IN AN ALTERNATIVE WAY 
+- If you need v-if to conditionally render large portions 
+  of the page, you can wrap those elements in a <template> 
+  tag. 
+    - This way you don't have to worry about the side-effects 
+      of wrapping it in a div. 
+        - The browser doesn't render a template tag directly so it 
+        won't make the markup structure different like a div 
+        wrapper would.
+    
+
+------ DONT DETACH IT WITH V-SHOW 
+- If you don't want the DOM element to be removed you can 
+  use v-show instead of v-if. 
+
+- Using v-show: 
+    - v-show just hides the DOM element with CSS 
+        - It puts "display: none" on the element. 
+    - It is quick functionality for hiding and showing elements. 
+
+
+------ RENDERING LISTS WITH V-FOR 
+- Basically its just like other template loops
+    - Allows us to loop through an array and render the 
+      individual items. 
+
+EXAMPLE: 
+<li v-for="ingredient in ingredients">
+    {{ ingredient }}
+</li>
+
+- If you need to extract the index...
+EXAMPLE: 
+<li v-for="(ingredient, index) in ingredients">
+    {{ ingredient }} : {{ index }}
+</li>
+
+
+------ USING AN ALTERNATIVE V-FOR SYNTAX
+- Basically if you want to loop a block of elements you 
+  should use a <template> tag so that you don't have to 
+  deal with the extra <div> 
+
+
+------ LOOPING THROUGH OBJECTS 
+- You can also loop through objects or arrays of objects 
+  with v-for.
+    - The difference is that v-for will also provide an 
+      alias to the key of the property.  
+
+SIDE NOTE: Nesting v-for is possible 
+
+EXAMPLE:   
+<li v-for="(value, key, index) in person">
+    {{ value }} {{ key }} {{ index }}
+</li>
+    - Value, key and index are not special names.
+        - it can be whatever you want to alias those values to be.
+        "(v, k, i) in person", or "(value, key, i) in person", etc. 
+    - But they are "positional" so the ordering is important.
+
+
+------ LOOPING THROUGH A RANGE 
+- This technique is good for arbitrarily rendering a limited 
+  range of components (ie: top 10, last 10 viewed, etc.)
+
+EXAMPLE: This will loop 10 times.
+    <li v-for="n in 10">
+        {{ n }}
+    </li>
+
+
+------ KEEPING TRACK OF ELEMENTS WHEN USING V-FOR 
+- If you .push() elements onto an iterable VueJS will update
+  the values rendered automatically. 
+    - This behavior is done by Vue keeping track of the object 
+      in memory behind the scenes. 
+
+- Furthermore, it will patch and watch values in the indeces 
+    of an array.
+    - Basically it will update elements in their respective 
+        positions. 
+
+- If you run into issues in a v-for loop, where the elements 
+  are not where you expect them to be (postionally), you 
+  should try assigning a unique 'key'.
+    EXAMPLE: Set the key of an array value.  
+    <li v-for="(ingredient, i) in ingredients" :key="ingredient"></li>
+

@@ -1,0 +1,191 @@
+------ COMMUNICATION PROBLEMS 
+- How do you send/ access data set on the parent component 
+  inside of the child component? 
+
+
+------ USING PROPS FOR PARENT => CHILD COMMUNICATION
+- The 'props' property is an array that can be 
+  set on a component. 
+    - It is an array of strings 
+    - Each string is the name of a property that is 
+      passed into the component from outside (the parent).
+
+<!-- child HTML --> 
+<template>
+    {{ valueToPass }} <!-- Renders "HEY BRANDON" from parent
+</template>
+<script>
+    export default {
+        props: ['valueToPass']
+    }
+</script> 
+
+- In the parent component/Vue instance you have to pass 
+  the property you want to access within the child. 
+    - You pass the property by binding to an HTML 
+      attribute of the same name. 
+
+EXAMPLE:
+<!-- Parent HTML --> 
+<template>
+    <child-component :valueToPass="value"></child-component>
+</template>
+<script>
+    export default {
+        data: function () {
+            return {
+                value: "HEY BRANDON"
+            }
+        },
+        components: {
+            'child-component': Child
+        }
+    }
+</script> 
+
+------ USING PROPS IN THE CHILD COMPONENT 
+- If you have props defined you can use them in the child's 
+  methods just as if those properties are its own. 
+
+
+------ VALIDATING PROPS 
+- When you pass data to child components the child is 
+  usually expecting a certain type of data. 
+    - Therefore it is useful to validate the data passed 
+      through props. 
+
+- TO VALIDATE: 
+    - Set props to be an object instead of an array of strings
+    - Set the value of the property to the type it should be.
+        - Or set it to an array of valid types
+        - Or set it to an object of various validation checks   
+    EXAMPLE: One type specified
+        props: {
+            myPassedProp: String
+        }
+    EXAMPLE: Array of types  
+        props: {
+            myPassedProp: [String, Array]
+        }
+    EXAMPLE: Object of validation parameters   
+        props: {
+            myPassedProp: {
+                type: String, 
+                required: false,
+                default: "Brandon"
+            }
+        }
+
+
+------ USING CUSTOM EVENTS FOR CHILD TO PARENT COMMUNICATION
+- When passing primitive types into a component, any updates 
+  made to those variables will not be automatically reflected 
+  on the parent.
+    - To update the parent accordingly you have to emit 
+      an event to notify the parent.
+
+- $EMIT: this.$emit('<nameOfEvent>', <eventData>);
+    - This is an instance method on components and Vue instances 
+        - It is used to emit custom events.
+    - <nameOfEvent>: Event that we can listen to.
+    - <eventData>: Data passed through $event variable.  
+    EXAMPLE:
+        // In the child component  
+        this.$emit('nameReset', this.name);
+     
+        <!-- Set up listener/handler on component -->
+        <child-component @nameReset="name = $event"></child-component>  
+
+
+------ UNDERSTANDING UNIDIRECTIONAL DATA FLOW 
+- Data only travels from child to parent and from parent to child.
+- Basically child components don't communicate with each 
+  other directly.
+
+PRIMARY WAYS TO COMMUNICATE: 
+    - Parent passes callback as 'prop' to child 
+        - Child then uses callback to pass data back to parent.
+    
+    - Alternatively the parent can listen to a custom event 
+      to react to a child altering data. 
+
+
+------ COMMUNICATING WITH CALLBACK FUNCTIONS 
+- An alternative to setting up a custom event (to update 
+  data on the parent) is to pass a function to the child. 
+
+- Strategy is to pass a callback function to the child 
+  via props.
+    - Then call this function when you want to update the 
+      parents data.    
+
+
+------ COMMUNICATING BETWEEN SIBLINGS 
+- How can we pass data from one child to another?
+
+1) Set up custom event emitter and listening for that 
+   event on the sibling. 
+   - Pass prop to all children that need it.
+   - Then emit an event on the child that updates the prop 
+   - Listen for that event where necessary (parent usually).
+   - Once the update event is emitted, change the value on the 
+     parent and the change will propogate down to children. 
+
+2) Pass a callback to all children that set the value of the prop when 
+   called. 
+    - The child calls the callback which, in turn updates the 
+      prop on the parent.
+    - Afterwards, the change will propogate to the siblings.
+
+3) The third approach is using an event bus. (see next video notes)
+
+
+------ USING AN EVENT BUS FOR COMMUNICATION 
+- Managing state in bigger and bigger applications requires 
+  better solutions than unidirectional data flow. 
+    - One solution is to create an event bus. 
+    - Another solution is to use Vuex. 
+
+IDEA: Creating an event bus. 
+    - Use a centralized object to pass the data.
+        - In Angular this is called a 'service'. 
+    - Inject this object where needed. 
+    
+PROCESS:
+    - Create Vue instance 
+        - This instance has to be created BEFORE 
+          the main Vue instance. 
+    - Export that instance as a named object 
+        - something like "eventBus" will suffice 
+    - Emit an event with the eventBus object in the same 
+      place you would when emitting with a child component. 
+        - Use the $emit() method in the same way. 
+    - Set up an event handler inside of objects that need to 
+      update that data. 
+        EXAMPLE: 
+        eventBus.on('somethingUpdated', (data) => {
+            this.something = data; 
+        });
+
+
+------ CENTRALIZING CODE IN AN EVENT BUS. 
+- A better way to manage complicated state with a bus is 
+  to create methods on that bus that directly emit events.  
+- Basically use a vue instance to outsource certain pieces 
+  of the code into a centralized location. 
+
+
+------ ASSIGNMENT 
+- Servers.vue:
+    - Loop through each Server component.
+    - Pass the server index 
+    - Create a new component for the list item 
+      - Pass the ID and the status to that component 
+      - Create Click handler on the component which loads 
+        the server in the server details component. 
+
+- In Server Details: 
+    - There should be a button to change the server.status 
+      back to 'normal'
+    
+    

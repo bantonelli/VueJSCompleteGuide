@@ -1,0 +1,101 @@
+------ WHY DO WE NEED A DEV SERVER? 
+- What does a real workflow need? 
+    - A Build process with ES6 transpilation
+    - A Development server
+
+- Why a dev server? 
+    - Emulates a more real-world situation 
+    - Uses http: protocol which allows us added features. 
+        - Lazy loading
+        - File fetching
+        - Routing
+
+
+------ WHAT IS A "DEVELOPMENT WORKFLOW"? 
+- Special features can be added to our codebase before it 
+  is shipped to a production server. 
+    - Features such as: 
+        - Single-file templates 
+        - Case-insensitive component selectors 
+        - Preprocessors 
+        - ES6 
+        - etc.
+
+- With a build process we can compile the VueJS templates 
+  before sending them to the browser 
+    - Using the CDN VueJS compiles the templates at 
+      run-time and this is both slower and makes the package bigger. 
+    - By pre-compiling them into JS our app is faster and leaner (by 30%)
+
+
+------ USING THE CLI TO CREATE PROJECTS 
+- VUE CLI:  
+    - Can be used to setup a build process and dev server 
+    - It also scaffolds out new projects based on 4 main templates: 
+        - Simple: CDN setup 
+        - Webpack-simple: Basic Webpack workflow
+        - Webpack: Complex Webpack workflow with testing 
+        - Browserify/Browserify-simple: For people who prefer browserify 
+    - Installation: npm install -g vue-cli 
+
+USAGE: Set up Webpack-simple project
+    - FIRST: scaffold project 
+    vue init webpack-simple <project-name>
+
+    - THEN: install dependencies
+    npm install 
+
+    - THEN: Run dev server 
+    npm run dev 
+
+
+------ AN OVERVIEW OF THE FOLDER STRUCTURE 
+INDEX.html: 
+    - File that actually gets served 
+    - It is edited and managed by VueJS
+
+/dist/build.js: 
+    - The bundled JS file 
+    - You won't see the dist/ folder in develoment mode
+        - Instead it is created in memory for development  
+    - You will only see the build file when you run 
+      a production build. 
+
+Vue Loader: Webpack loader   
+    - Package that allows us to use .vue files 
+    - This gives us the ability to write single-file components. 
+    
+
+------ UNDERSTANDING .VUE FILES 
+- Instead of using the 'el' property 
+    - Which uses actual html to generate the vue template 
+- Instead of using the 'template' property 
+    - Which forces us to write string forms of html 
+- There is a 3rd option for templating -> .vue files 
+    - Allows us to put template and JS code into a single file (.vue)
+
+.VUE files: 
+    - They get compiled into pure JS by the vue-loader/webpack
+    - They run natively in the browser after compilation. 
+    - Don't have as many limitations as el or template property. 
+    - Have a <template> tag
+        - Template is HTML and Vue template language
+        - This gets rendered by the main.js Vue instance  
+    - Have a <script> tag 
+    - Have a <style> tag
+
+
+------ UNDERSTANDING THE OBJECT IN THE .VUE FILE 
+- The object exported in the .vue file is the same object that 
+  we use to construct a Vue instance.
+- It has the same properties we are used to passing
+    - The only difference is the 'data' property is treated differently. 
+- *** SIDE NOTE: 
+    - You don't have to export anything and it will still work. 
+
+
+------ HOW TO BUILD YOUR APP FOR PRODUCTION 
+- Run: npm run build 
+    - This will create the /dist/ folder with the bundled JS. 
+    - This is the command you run to deploy apps. 
+

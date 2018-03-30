@@ -1,0 +1,29 @@
+<html>
+<head>
+    <script src="https://unpkg.com/vue@2.3.2"></script>
+
+</head>
+<body>
+    <div id="app">
+        <template>
+            <h1 v-show="visible">Template</h1>
+            <p v-show="visible">Inside the template</p>
+        </template>
+        <button @click="visible = !visible">
+            <span v-if="visible">Hide Template</span>
+            <span v-else>Show Template</span>
+        </button>
+        <ul>            
+            <li v-for="ingredient in ingredients">{{ ingredient }}</li>
+        </ul>
+        <template v-for="(ingredient, index) in ingredients">
+            <h1>INGREDIENT: {{ ingredient }}</h1>
+            <p>NUMBER: {{ index + 1 }}</p>
+        </template>
+    </div>
+    <script type="text/javascript" src="/script.js"></script>
+</body>
+</html>
+
+
+

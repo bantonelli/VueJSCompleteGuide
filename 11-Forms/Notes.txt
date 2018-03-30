@@ -1,0 +1,146 @@
+------ A BASIC <INPUT> FORM BINDING 
+- To bind a value to the text input just 
+  use the v-model directive. 
+  - This will automatically set up 2-way data 
+    binding to the value of the text input. 
+
+- BINDING IN VUE:
+    - If a property is bound in multiple places how 
+      would values be overridden?
+    - Behind the scenes VueJS tracks the source 
+      of a change to a bound value. 
+    - Therefore whatever changes the value will 
+      be the source of truth for that bound property.
+        - After the change is made the other 
+          bound elements will be updated. 
+    
+
+------ GROUPING DATA AND PREPOPULATING INPUTS 
+- By setting a default value for a bound/v-model 
+  property it will prepopulate the form input. 
+- You can also group bound properties by nesting 
+  them into a more complex object. 
+    - Then we can access the values in interpolation
+      by using the . operator.  
+      
+
+------ MODIFYING USER INPUT WITH MODIFIERS 
+- You can use modifiers on v-model to both 
+  react to input differently and process input 
+  differently 
+- Examples: 
+    - v-model.lazy
+        - Changes the directive to only react 
+          to changes when the input leaves focus 
+    - v-model.number 
+        - Converts input from string to number 
+          before sending it to the Vue instance. 
+    
+
+------ BINDING TEXT-AREA AND SAVING LINE BREAKS 
+- You can bind to a text area by using v-model 
+  as well. 
+    - DONT USE THE AREA INSIDE THE TEXTAREA TAG 
+        - Just bind to v-model its easier. 
+
+- If you want to keep the linebreaks?
+    - Vue automatically keeps the string from 
+      text areas as multiline strings. 
+    - You can format it in multiline by 
+      using "white-space: pre;" in your CSS style.
+
+
+------ USING CHECKBOXES AND SAVING DATA IN ARRAYS 
+- How can we tell VueJS to store values from 
+  a bunch of checkboxes in an array?
+
+- Using v-model:
+    - Bind the <input> of the checkbox to an array 
+      in the Vue instance.
+    - Vue will detect that we are using the same 
+      model with checkboxes.
+        - Then it will merge the values into the 
+          single array. 
+
+
+------ USING RADIO BUTTONS
+- To work with radio buttons, just use the v-model 
+  directive on the <input> like other form inputs. 
+
+- By using the same model property:
+  - VueJS will automatically group the radios that 
+    reference the same property. 
+  - Vue will also use the "value" attribute to set 
+    the value of the model property.
+
+
+------ HANDLING <SELECT> AND <OPTION>
+- SELECT: 
+  - You can set default values and bind to the 
+    selected value by setting v-model on the <select>
+
+- OPTION:
+  - You can set defaults by binding to the :selected 
+    attribute of <option>
+  - You can also dynamically render options with v-for 
+
+
+------ HOW TO MAKE A CUSTOM CONTROL (INPUT)
+WHAT DOES V-MODEL DO?
+  - It binds to the 'value' attribute of an input 
+  - It also creates a listener for @input 
+    - It then sets the property upon @input events 
+    EXAMPLE: @input="userData.email = $event.target.value"
+
+CUSTOM CONTROL REQUIREMENTS:
+  - Since v-model has to bind to the 'value' attribute 
+    our custom input needs one as well.
+  - It also has to emit an event called 'input' so 
+    that v-model can react to that. 
+
+
+------ CREATING A CUSTOM CONTROL (INPUT)
+- Created a custom switch input. 
+- KEYS:
+  1) Custom control must take in a prop called 'value'
+    - This is because v-model automatically binds to that 
+      attribute when placed on a component. 
+  2) Must emit an 'input' event 
+    - Upon being emitted the payload is used to set the 
+      bound property of v-model
+    - Then the bound property is then passed back in as a 
+      prop called 'value' 
+        - Your component can then react to the value 
+          in a visual manner. 
+
+
+------ SUBMITTING A FORM 
+- Add click listener to submit button 
+  - The listener should have .prevent modifier 
+  - We do this to prevent default submit behavior
+    - We want to handle submission on the front end
+      instead of the normal behavior which is sending it 
+      to the server. 
+    
+  
+------ ASSIGNMENT INSTRUCTIONS (9)
+Exercise 1: Create signup form 
+  - Fullname
+    - Text input --> First Name
+    - Text input --> Last Name
+  - Mail --> email field
+  - Password --> password field
+  - Store data 
+    - Yes --> radio
+    - No --> radio 
+    
+Exercise 2: 
+  - Only display form if it has not been submitted 
+  - Display the Data Summary once the form has been submitted.
+
+Exercise 3: 
+  - Edit the Example from above and create a custom 
+    "Full Name" control 
+  - Should still hold the first name and 
+    last name input fields 
+  

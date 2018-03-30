@@ -1,0 +1,16 @@
+------ ASSIGNMENT
+- Progress bar needs to track number of quotes in the app 
+    - Probably need a quote service / event bus. 
+- Delete quote by clicking on it 
+- Add quote by typing in box then clicking add quote
+- Limit is 10 quotes 
+    - Upon trying to add an eleventh quote an alert pops up 
+    - Doesn't add the 11th.
+- Dynamically add quote components based on the number of quotes. 
+
+- Components we need? 
+    - Header / Progress bar 
+    - Place to create quote 
+        - New Quote
+    - All Quotes 
+    - Single quote 
