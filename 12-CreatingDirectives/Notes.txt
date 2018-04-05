@@ -74,7 +74,7 @@ EXAMPLE: Setup global directive
 
 
 ------ PASSING ARGUMENTS TO DIRECTIVES 
-- The syntax for passing arguments to directives is the ':'
+- The syntax for passing named arguments to directives is the ':'
     EXAMPLE: v-bind:<arg>
 
 - We can pass argument with our own custom directives 
