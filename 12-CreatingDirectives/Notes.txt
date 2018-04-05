@@ -35,10 +35,11 @@ WAYS TO CREATE DIRECTIVES:
     - same args as BIND except oldVnode
     - oldVnode
         - Since there is an update there is an oldVnode.
-4) COMPONENTUPDATED: update(el, binding, vnode, oldVnode)
+4) COMPONENTUPDATED: componentUpdated(el, binding, vnode, oldVnode)
     - Fired Once component is updated 
         - with children **** 
-        - once EVERYTHING has been updated 
+        - once EVERYTHING has been updated
+        - Only fired when component AND it's children get updated.  
     - same args as UPDATE 
 5) UNBIND: unbind(el, binding, vnode)
     - Fired once directive is removed 
