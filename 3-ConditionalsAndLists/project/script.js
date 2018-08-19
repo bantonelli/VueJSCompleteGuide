@@ -15,5 +15,10 @@ new Vue({
             {name: "Max", age: "27", color: "white"},
             {name: "Anne", age: "unknown", color: "black"}
         ]
+    },
+    methods: {
+        changeVisible: function (event) {
+            this.visible = !this.visible;
+        }
     }
 });
