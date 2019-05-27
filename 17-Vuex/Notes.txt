@@ -88,3 +88,242 @@ EXAMPLE USAGE:
 - The action then runs the commit method of the mutation 
     - The action will only run the commit when the async task is complete. 
     - It's basically a way to implement 'await' functionality. 
+- You can also mapActions in the same way as mapMutations 
+    - Do this in the 'methods' property of the Vue Instance. 
+
+
+------ MAPPING ACTIONS TO METHODS 
+- mapActions gives you access to the FULL action within the Vue Instance
+    - As you would expect you can even pass the payload parameter 
+
+ACTION PAYLOADS: 
+    - The action API only allows 2 parameters action(context, payload)
+        - If you need to pass multiple parameters to an action you have to pass an object as the payload. 
+
+
+------ A SUMMARY OF VUEX 
+- CENTRAL STORE: 
+    - Holds the state of the application 
+- MUTATIONS: 
+    - Change the state of the central store synchronously 
+    - NO ASYNC CODE ALLOWED HERE 
+- GETTERS: 
+    - Access the state properties within the components 
+    - Components that use getters will automatically get updated. 
+- ACTIONS: 
+    - Commit mutations to the store asynchronously OR synchronously 
+    - These are dispatched by our components 
+    - It's best practice to use actions to trigger mutations 
+
+- Use map... functions from the 'vuex' package to quickly mixin behavior 
+
+
+------ TWO-WAY DATA BINDING (v-model) and Vuex 
+- Getters can't be bound from forms using v-model in the normal way 
+- Basically you can render the getter value, but you CAN'T update the getter value in the state 
+
+SOLUTION 1:  
+- You have to trigger a method that then commits the new value 
+1) Create a new action in the store that can be called in the component 
+2) On @input event call this method and pass the @input payload to it 
+3) Bind the getter to the 'value' of the input 
+    EXAMPLE: <input type="text" :value="myGetter" @input="updateMyGetter"> 
+
+SOLUTION 2: 
+- Use the setter for the computed property on the component 
+EXAMPLE:
+    // Inside Vue Instance 
+    computed: {
+        myGetter: {
+            get() {
+                return this.$store.getters.myGetter; 
+            },
+            set(newValue) {
+                this.$store.dispatch('updateMyGetter');
+            }
+        }
+    }
+
+
+------ IMPROVING FOLDER STRUCTURES / MODULARIZING STATE MANAGEMENT 
+PROBLEM: 
+    - The central store can quickly become a HUGE file if everything stays there 
+    - How do we properly reorganize it into separate folders/files? 
+
+SOLUTION: Modules 
+- The idea behind modules is to have different files in the /modules directory 
+- Each file will contain objects that will get used as properties in the central store object 
+
+1) Create a 'modules' folder inside of the '/store' directory 
+
+2) Separate properties of the store based on the components using the store 
+    EXAMPLE: 
+        - Given a 'counter' component and a 'ticker' component, files should be: 
+        /store/modules/counter.js 
+        /store/modules/ticker.js 
+        /store/store.js 
+
+3) In each module file put constants for each store property 
+    EXAMPLE: counter.js file 
+        const state = {
+            counter: 0
+        };
+
+        const getters = {
+            doubleCounter: (state) => {
+                return state.counter * 2; 
+            }
+        };
+
+        const mutations: {
+            increment: (state, payload) => {
+                state.counter += payload;
+            }
+            decrement: (state, payload) => {
+                state.counter -= payload;  
+            }
+        };
+
+        const actions: {
+            ...
+        }
+    
+4) Export objects 
+    EXAMPLE: 
+    // counter.js 
+    export default {
+        state, 
+        mutations, 
+        getters, 
+        actions 
+    }
+
+5) Import module to the central store.js 
+    - Use the 'modules' property of the central store object to import each module 
+    EXAMPLE:
+        import counter from './modules/counter';
+        // /store/store.js
+        modules: {
+            counter: counter  
+        }
+
+
+------ USING SEPARATE FILES 
+- Sometimes you have state, actions, getters, etc. that don't belong to separate 
+  modules, they are application-wide / global. 
+- So what happens then? 
+
+SOLUTION: Create separate files for each property in the store 
+- The below approach can be used for getters, mutations, etc. 
+- the 'rootState' parameter is used to access the main central state. 
+    - EXAMPLE: SEPARATING ACTIONS
+        /store/store.js 
+        /store/modules/counter.js 
+        /store/actions.js 
+
+        // actions.js 
+        export const updateValue = ({state, commit, rootState}, payload) => {
+            ...
+        }
+        export const increment = ({state, commit, rootState}, payload) => {
+            ...
+        }
+
+        // store.js --> This * import will create an object that has ALL of the exports in 'actions.js' as properties 
+        import * as actions from './actions';
+
+        export const store = new Vuex.Store({
+            ...
+            actions: actions 
+            ...
+        });
+
+- You can even separate modules into separate folders too 
+EXAMPLE: 
+    /store/modules/counter/actions.js 
+    /store/modules/counter/getters.js 
+    /store/modules/counter/mutations.js 
+    /store/modules/counter/state.js 
+
+    
+------ USING NAMESPACES TO AVOID NAMING PROBLEMS 
+- If you use multiple modules you have to make sure that the names don't conflict 
+- For large applications you can use a dedicated naming pattern... 
+
+SOLUTION: 
+- Use a dynamic naming system (similar to automation tool)
+1) Create a file with constant variables that map to string names of functions 
+2) Import this file in each module to dynamically assign names for actions, getters, mutations, etc. 
+
+***** ASIDE 
+    - map functions will no longer work with static strings 
+    - You have to use the naming file to map the names correctly 
+
+EXAMPLE: 
+// store/names.js 
+// Add module names as prefixes to property names 
+export const DOUBLE_COUNTER = 'counter/DOUBLE_COUNTER';
+export const CLICK_COUNTER = 'counter/CLICK_COUNTER';
+
+// components/counter.vue 
+import {mapGetters} from 'vuex';
+import * as names from '../store/names';
+
+export default {
+    computed: {
+        ...mapGetters({
+            doubleCounter: names.DOUBLE_COUNTER,
+            clickCounter: names.CLICK_COUNTER
+        });
+    }
+}
+
+
+------ AUTO-NAMESPACING WITH VUEX 2.1 
+- In this version and higher modules can be auto-namespaced by using the 
+  'namespaced: true' option 
+- The counter module in the example below will automatically get assigned the 
+  namespace counter/ 
+    - Everything inside the module are auto resolved to respect the namespace 
+- With this approach its better to export the entire 'counter' object from the modules/counter.js file 
+    - And then import and assign it in the main store.js file. 
+
+EXAMPLE: store.js 
+    ... 
+    modules: {
+        counter: {
+            namespaced: true,
+            state: ...,
+            actions: ...,
+            getters: ...,
+            mutations: ... 
+        }
+    }
+    ...
+    
+
+------ ACCESSING GLOBAL ASSETS IN NAMESPACED MODULES 
+GLOBAL STATE AND GETTERS: 
+- If you want to access global state and getters, 'rootState' and 'rootGetters' are 
+  passed as the 3rd and 4th arguments to getter functions
+    EXAMPLE: 
+    someGetter: (state, getters, rootState, rootGetters) => {
+        ...
+    }
+
+GLOBAL ACTIONS: 
+- For actions rootState and rootGetters are exposed as properties of the context object. 
+    EXAMPLE: 
+    someAction: ({commit, dispatch, getters, rootGetters}) => {
+        // call a root getter 
+        var someVariable = rootGetters.someGetter; 
+
+        // call root action 
+        dispatch('someAction', null, {root: true});
+    }
+
+GLOBAL MUTATIONS: 
+- when calling 'commit' pass {root: true} as the third argument 
+    - This will indicate that the mutation specified is on the root store. 
+    EXAMPLE: 
+        commit('someMutation', null, {root: true});
