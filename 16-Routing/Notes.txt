@@ -1,0 +1,313 @@
+------ INTRO 
+- You can't make a real SPA without using 
+  a router for the client. 
+- This part is crucial 
+
+
+------ SETTING UP THE VUEJS ROUTER (VUE-ROUTER)
+- You can represent pages in the application 
+  by simply using different components 
+  - Therefore you need multiple components to create different
+    routes 
+
+INSTALLING THE ROUTER: (Currently on version 3.0.1) 9/2/18
+    - npm install --save vue-router 
+    - Installs the 2.0 router 
+
+
+------ SETTING UP ROUTES 
+- You add the plugin in the same ways that VueResource 
+  was added to the global Vue Environment 
+
+1) Set up a routes.js file 
+    - create a routes array of route objects 
+    EXAMPLE:
+        import Home from './components/Home.vue';
+        import Profile from './components/Profile.vue';
+
+        export const routes = [
+            { path: '/', component: Home },
+            { path: '/userprofile', component: Profile }
+        ]; 
+2) Import these routes into the main.js Vue instance 
+    - Instantiate a new router 
+        - Set this instance to be the main app router 
+    - Import routes from routes.js
+        - Pass these to the constructor 
+    EXAMPLE: 
+        ...
+        import { routes } from './routes' 
+
+        Vue.use(VueRouter);
+        // Instantiate new router
+        const router = new VueRouter({
+            routes 
+        });
+
+        new Vue({
+            el: '#app',
+            router: router,
+            render: h => h(App)
+        });
+
+3) Set up router-view outlet in main App.vue template 
+    - The <router-view></router-view> tag is what allows 
+      the router to inject the component into the app 
+      instance. 
+    - Basically you can specify which part of the application 
+      utilizes the VueRouter routes. 
+
+- The VueRouter by default uses the hash URL symbol 
+  to prefix routes handled by the package. 
+
+
+------ UNDERSTANDING ROUTE MODES: HASH VS HISTORY 
+- The Hash styled URL is common for SPAs
+- To remove the hash:
+    1) The server should be configured to ALWAYS return 
+      the index.html file 
+        - This way at ANY URL the javascript will be loaded 
+            - And therefore the remaining URL path will be 
+                handled by VueRouter
+        - The webpack basic dev server is automatically configured 
+            to serve the index.html at all requests
+            - So this part is handled for you already IF 
+                using Vue CLI 
+    2) Set the Route mode to "history"
+        - Default is 'hash' 
+        EXAMPLE: 
+             const router = new VueRouter({
+                routes, 
+                mode: 'history'
+             });
+
+
+------ NAVIGATING WITH ROUTER LINKS 
+- Instead of using <a> tags use the <router-link> component 
+    - This will render <a> tags in the end anyway 
+    - Use the to="" attribute on the <router-link> to set the 
+      relative url path 
+      EXAMPLE: 
+        <router-link to="/user">User Profile</router-link>
+    
+
+------ STYLING ACTIVE LINKS 
+- The router-link component, by default, generates the 
+  .router-link-active CSS class when active 
+
+- You can change the default tag for the router-link 
+    EXAMPLE: <router-link tag="li"></router-link>
+    - This makes the tag be an <li> instead of <a> 
+
+- You can also nest elements inside of the router-link 
+    EXAMPLE: 
+    <router-link tag="li" to="/"><a>Home</a></router-link>
+
+- You can also specify the active class of the router-link 
+    EXAMPLE: 
+    <router-link tag="li" to="/" active-class="active"><a>Home</a></router-link>
+
+- By default the active class matches as long as active URL is included 
+    - For example, "/" and "/home" would both be considered active when 
+      at "/home"
+    - You can change this to be exact match using "exact" keyword
+    EXAMPLE:  
+    <router-link tag="li" to="/" active-class="active" exact><a>Home</a></router-link>
+        - This would match "/" only when it is exactly "/"  
+            - "/home" would no longer match. 
+
+
+------ NAVIGATING WITHIN JS CODE
+- You can use this.$router to access navigation/routing functions
+- USING $router.push():
+    EXAMPLE: 
+        methods: {
+            navigateToHome() {
+            // Pushes the '/' URL onto the browser's history stack. 
+                this.$router.push('/');
+            }
+        }
+
+
+------ SETTING UP ROUTE PARAMETERS
+- You can pass variable information in the URL
+- Use the ':' to identify a URL parameter  
+EXAMPLE: 
+    export const routes = [
+        { path: '/', component: Home},
+        { path: '/user/:id', component: User}
+    ];
+
+- You can retrieve URL parameter values from '$route.params'
+    - The name of parameter will match what you defined in 
+      routes object. 
+EXAMPLE: 
+    data() {
+        return {
+            id: this.$route.params.id
+        }
+    }
+
+
+------ REACTING TO CHANGES IN ROUTE PARAMETERS 
+- As the $route object changes you can watch for these 
+  changes. 
+- Just set up a watch function for $route 
+EXAMPLE: 
+    watch: {
+        '$route': function (to, from) {
+            // to --> to which route are we going
+                // This is the new route getting loaded
+            // from --> from which route are we coming  
+                // This is the old route we are coming from 
+            this.id = to.params.id;
+        }
+    }
+
+
+
+------ BINDING ROUTE PARAMETERS TO COMPONENT PROPS  
+- As of vue-router 2.2, you can also bind your route  
+  params to props of target components. 
+    - This is an alternative to watching $route 
+    - You can basically either pass a static value, bind 
+      a dynamic value to props or use a function to also 
+      convert your dynamic value. 
+
+- BASIC APPROACH: 
+    - In your routes object, set the props property to 
+      be the prop you wish to bind to. 
+    - By default route params are of type String   
+
+EXAMPLE: 
+function dynamicPropsFn(route) {
+    // This object gets set to .props in route object. 
+    return {
+        username: "big " + route.params.username;
+    }
+}
+
+export const routes = [
+    // passes route.params to props
+    { path: '/user/:username', component: Home, props: true},
+
+    // passes static value to prop  
+    { path: '/user', component: Home, props: {username: "bigdog"}}
+
+    // custom logic for mapping route params to prop
+    { path: '/user/:username', component: Home, props: dynamicPropsFn}
+];
+
+
+------ SETTING UP CHILD ROUTES (NESTED ROUTES)  
+- Basically the route objects have a property called "children" 
+    - This is an array of route objects. 
+    - This will append the paths of the child routes to the parent 
+
+EXAMPLE: 
+    export const routes = [
+        { path: '', component: User, children: [
+            { path: '', component: UserStart },
+            { path: ':id', component: UserDetail }, 
+            { path: ':id/edit', component: UserEdit }
+        ]}
+    ];
+
+
+------ NAVIGATING NESTED ROUTES 
+- After the child routes are added: 
+    - You must add a <router-view></router-view> tag to the 
+      parent component template 
+      - This is because the global <router-view> will not render 
+        child routes. 
+
+- You can set up <router-link> elements inside of 
+  child route components. 
+    - The links will be relative to the entire domain (even if they 
+      are part of a child route) 
+
+
+------ MAKING ROUTER LINKS MORE DYNAMIC 
+- You can bind the 'to' attribute of the router-link to 
+  some data property on the component or some dynamic value 
+
+EXAMPLES: 
+    :to="'/user/' + $route.params.id + '/edit'">
+    :to="componentDataProperty">
+
+
+------ A BETTER WAY OF CREATING LINKS: NAMED ROUTES 
+- The vue-router allows you to name the route objects 
+- Then you can reference this name to get it's path. 
+
+EXAMPLE: 
+    // Route object 
+    { path: ':id/edit', component: UserEdit, name: 'userEdit'}
+
+    // <router-link> 
+    :to="{ name: 'userEdit', params: { id: $route.params.id } }">
+
+- You can also pass the same type of object to this.$router.push() 
+EXAMPLES: 
+    this.$router.push({ path: '/' });
+    this.$router.push({ name: 'userEdit', params: { id: $route.params.id } }) 
+
+
+------ USING QUERY PARAMETERS 
+- To set query parameters pass the 'query' property of the 
+  "to" object or path object 
+
+EXAMPLE: 
+:to="{ name: 'userEdit', query: { locale: 'en', otherParam: 'stuff'}}">
+
+- To access the query parameter access $route.query
+
+EXAMPLE: 
+// In template 
+{{ $route.query.locale }}
+
+
+------ MULTIPLE ROUTER VIEWS (NAMED VIEWS) 
+- You can use a specific name via the name attribute of 
+  the router-view tag 
+
+- To configure this you have to assign the 'components' 
+  property of the route object
+
+EXAMPLE:
+// TEMPLATE FOR app.vue 
+
+<router-view> // default 
+<router-view name="header-top"> // load the HeaderComponent here 
+
+// routes.js 
+export const routes = [
+    { path: '/', name: 'home', components: {
+        default: HomeComponent,
+        'header-top': HeaderComponent
+    }}
+];
+
+- <default> property should be set to what you 
+    want to load into the default router-view 
+    - The unnamed router-view will be treated 
+    as the default router-view
+- 'header-top'
+    - should be the same name used in router-view 
+
+
+------ REDIRECTING 
+- To set up a redirect route simply include 'redirect' 
+  property on the route object. 
+    - The redirect property should be a URL path to redirect to. 
+    - You can also pass a named route object here as well
+
+- You can also use the this.$router.replace(<pathObject>)
+    - This will route to a specific URL and remove the 
+      original path from history (the user won't be able to go back).
+      
+
+------ CATCH ALL ROUTES (WILD CARDS) 
+- Just use 
+    { path: '*', redirect: '/'}
+    - This will catch ALL routes that are entered by the user. 

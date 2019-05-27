@@ -1,1 +1,196 @@
 ------ INTRODUCTION 
+- Typically in a lot of applications you need to reach out 
+  and fetch some data.
+- Usually this will be done via AJAX for SPA's  
+    - This feature will be available to us via vue-resource
+
+
+------ ACCESSING HTTP VIA VUE-RESOURCE: SETUP 
+- You can use other http/AJAX packages (jQuery, etc.)
+- This one simply integrates with Vue very well 
+    - Also comes with a few added features 
+- You use vue-resource by adding it as a middleware 
+
+Vue.use(): 
+    - Function to add a plugin to Vue app globally 
+    - USAGE: put this in main.js file 
+        import VueResource from 'vue-resource';
+        ...
+        Vue.use(VueResource);
+        new Vue(...);
+    - This makes the entire vue runtime (not just the instance)
+      use the vue-resource plugin. 
+        - Therefore it should be available for use in ANY instance 
+          created in this application. 
+
+
+------ SETTING UP A SERVER: FIREBASE
+- In order to use vue-resource we need some server 
+- Go to firebase.google.com 
+- Set up a project
+- Start a database for this project
+    - Make sure you pick the Realtime Database, NOT Firestore!
+
+
+------ POSTING data to a server (POST request) 
+- Now that we have VueResource installed as a plugin // Vue.use(VueResource);
+    - Every vue instance has access to the 'http' object 
+    EXAMPLE: this.$http.get(<urlString>), this.$http.post(<urlString>, <data>), etc.
+
+- VueResource uses the promise approach to handle async requests. 
+    - This means you can use .then(successFn, errorFn), or .catch(errorFn)
+
+- When you use $http.post() on firebase: 
+    - You have to set the data type you're sending in the url 
+        EXAMPLE: 
+        https://vue-js-http-ee4eb.firebaseio.com/data.json 
+        - Appending data signifies that the database will post to or created
+          a new table called "data" 
+        - .json lets firebase know the format of the data being posted. 
+    - Everytime you post the same request a new record will be made 
+      on that table (with a unique ID) 
+
+
+------ GETTING and transforming data (GET request)
+- VueResource gives us some added features to the response object 
+- EXAMPLE: 
+    this.$http.get('<url>').then(function (response) {
+        // The .json() method transforms the response body into JSON 
+        // This functionality is provided from VueResource
+        response.json();
+    })
+
+- The response object is also a Promise itself 
+    - Therefore you can't access the request body data until that 
+      promise is resolved. 
+    - You can handle this by returning the response and then chaining 
+      another .then() handler to the promise chain. 
+    - EXAMPLE: 
+    this.$http.get('<url>').then(function (response) {
+        return response.json(); // THIS IS JUST A PROMISE 
+    }).then(function (bodyData) {
+        console.log(bodyData);
+    });
+
+------ CONFIGURING VUE-RESOURCE GLOBALLY 
+- You can set various options on the http object provided by VueResource
+- EXAMPLE: main.js 
+    // Set the root key to be a URL 
+    // This makes every request be sent to this base URL/Endpoint 
+    Vue.use(VueResource);
+    Vue.http.options.root = 'https://vuejs-http-ee4eb.firebaseio.com/data.json';
+
+- This is good for establishing a main API endpoint that you hit 
+  for all resources 
+    - Then within the Vue instance you can append subroutes to this route. 
+    EXAMPLE: 
+    this.$http.get('users').then(...);
+    // This makes a request to root/users 
+    // Basically VueResource appends /users to the root 
+        // URL in the http.options object. 
+
+- There are plenty of options. 
+    - Examples: http.options.root, http.options.headers, etc. 
+    - See the Vue Resource Docs for more info 
+
+------ INTERCEPTING REQUESTS (MIDDLEWARE FUNCTIONS FOR VueResource)
+- The VueResource http object comes with a property called 
+  interceptors 
+    - This is an array of functions called upon each request 
+    - They behave like middleware because these functions run before 
+      the .then() handlers receive the request. 
+EXAMPLE: 
+    Vue.use(VueResource);
+    // push a new interceptor function 
+    Vue.http.interceptors.push(function (request, next) {
+        // like with express middleware you have to call next()  
+            // this moves the request data onto the next handler in the chain. 
+        if (request.method == "POST") {
+            request.method = "PUT";
+        }
+        next(response => {
+
+        });
+    });
+
+
+------ INTERCEPTING RESPONSES (MIDDLEWARE FUNCTIONS FOR VueResource)
+- You can intercept responses as well
+- Basically you can alter the properties on the response object inside 
+  of the next() call.
+
+EXAMPLE: 
+    next(response => {
+        // You can change the way response.json works for example 
+        response.json = () => {
+            return { messages: response.body };
+        };
+    });
+
+
+------ THE "RESOURCE" IN VueResource
+- You first create a resource field in the component data 
+- This will create a data representation similar to the database store 
+  inside of the Vue instance 
+- To submit/POST to the resource endpoint:
+    - You can call .save() on the resource 
+    EXAMPLE: 
+        data: function () {
+            return {
+                 ...
+                 resource: {}   
+            }
+        },
+        methods: {
+            postToDatabase () {
+                // The .save() method is part of the $resource API 
+                // It is a default action in the DOCS
+                    // paramsToURL should be an object (can be empty)
+                this.resource.save(<paramsToURL>, <dataToPass>);
+            }
+        },
+        created: function () {
+            // This sets up the data at the endpoint as a resource
+            // $resource comes from the VueResource plugin  
+            this.resource = this.$resource('<endpointURL>');            
+        }
+
+
+------ CREATING CUSTOM RESOURCES 
+- You can create your own custom actions on the resource
+- Custom Actions are basically custom request configurations  
+EXAMPLE: 
+    const customActions = {
+        saveAlt: {method: "POST", url: 'alternative.json'}
+    }
+    // pass in the customActions to the resource 
+    this.resource = this.$resource('data.json', {}, customActions);
+
+SIDENOTE:  
+    - You can also set up resources on a central object (Bus, Vuex, etc.) 
+
+
+------ RESOURCES VS "NORMAL" HTTP REQUEST 
+- In some cases it may be better to use simple HTTP requests as opposed 
+  to resources. 
+- Usually if your getting some one-off data you can use HTTP 
+- If you're getting a model use a resource 
+
+
+------ UNDERSTANDING TEMPLATE URLs 
+- There is a standard for coding URL templates 
+- See medialize.github.io/URL.js/uri-template.html 
+    - Goes in-depth about the standard and how to use information 
+      within the URI template 
+- PASSING VARIABLES TO URLs USING VueResource: 
+    - GET requests in VueResource take a context object for the 
+      URL template, as its first parameter. 
+    - The keys for this object should match the variables in the template 
+
+EXAMPLE:
+    ...
+    this.resource.get({node: 'data'})
+    ...
+    this.resource = this.$resource('{node}.json', {}, customActions);
+
+

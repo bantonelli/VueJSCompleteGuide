@@ -165,6 +165,10 @@
         methods: {
             submitted: function () {
                 this.isSubmitted = true;
+            },
+            setValue: function (value) {                
+                // console.log(event);
+                this.switched = value;
             }
         }
     }

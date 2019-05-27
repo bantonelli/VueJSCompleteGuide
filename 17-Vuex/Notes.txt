@@ -1,0 +1,90 @@
+------ BASIC USAGE AND SETUP 
+- Install vuex npm package 
+- Set up store.js 
+- import Vue from 'vue';
+- import Vuex from 'vuex';
+- Vue.use(Vuex);
+- Create a new store 
+    // state is a special name 
+    // counter is just an arbitrary variable used throughout the application 
+    export const store = new Vuex.Store({
+        state: {
+            counter: 0;
+        }
+    });
+- Go to main.js     
+- import {store} from './store/store'
+- Register store as a property on the main Vue instance 
+    new Vue({
+        ...
+        store: store,
+        ...
+    }) 
+- After registering it you can use it from within components 
+    - this.$store.state.counter++;  
+
+
+------ WHY CENTRALIZED STATE ALONE ISN'T GOOD ENOUGH 
+- When 2 separate components start accessing things on state directly 
+  the code ends up being less DRY... 
+    - Specifically, you end up duplicating methods that manipulate the state 
+
+
+------ UNDERSTANDING GETTERS 
+- Define getters in the reserved Vuex property "getters"
+- Example: 
+    Vuex.Store({
+        state: {...},
+        getters: {
+            doubleCounter: (state) => {
+                return state.counter * 2;
+            }
+        }
+    });
+- To use the getter: 
+    computed: {
+        counter() {
+            return this.$store.getters.doubleCounter;
+        }
+    } 
+
+
+------ MAPPING GETTERS TO PROPERTIES 
+- There is a utility function: mapGetters([getter1, getter2, ...])
+    - this will create all the computed properties we need from getters 
+
+EXAMPLE USAGE: 
+    import {mapGetters} from 'vuex';
+    computed: {
+        ...mapGetters([getter1, getter2, ...])
+    }
+    // **** NOTE: "..." Is the Spread operator 
+    // - this will pull out the properties from the mapGetters object and put them on the 'computed' object
+    // - Need babel-preset-stage-2 installed for use of spread operator 
+
+
+------ UNDERSTANDING MUTATIONS 
+- Mutations help keep track of "when" a state change happens 
+- These are like "setters" to the getters 
+    - The main difference is that these have to be committed to the state 
+
+
+------ USING MUTATIONS 
+- 'mutations' is a reserved word just like getters 
+- EXAMPLE: 
+    this.$store.commit('nameOfMutation', <data>);
+- You can use mapMutations() helper method to map these functions to 'methods' of a component 
+    - Has the same method signature as mapGetters 
+
+
+------ WHY MUTATIONS HAVE TO RUN SYNCHRONOUSLY 
+- Mutations change the state directly 
+- This is why they happen immediately
+- However if you have to update state using an async method you should use 'actions' 
+
+
+------ HOW ACTIONS IMPROVE MUTATIONS
+- Basically events dispatched from the component to let the store know to trigger an action function 
+- The action then runs the commit method of the mutation 
+    - The action will only run the commit when the async task is complete. 
+    - It's basically a way to implement 'await' functionality. 

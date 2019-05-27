@@ -1,0 +1,71 @@
+------ AUTHENTICATION IN VUE 
+- Set up root API endpoint on vue-resource / axios 
+    - Do this via configuration object (options, root, etc.)
+- Set up sign-in and sign-up VueJS components
+    - These components contain the UI and methods for building 
+      auth requests to the backend 
+    - These Should:
+        - build a formData object payload to send in the request 
+            - formData contains info such as email, password, confirm pass, etc. 
+        - trigger the appropriate request actions 
+            - These 2 actions are both defined on Vuex instance
+            - trigger the request by using: 
+                this.$store.dispatch('<signupAction>', formData); 
+- Set up Vuex instance 
+    - This instance will:
+        - be injected into components that require it's data  
+        - Store the auth token 
+        - Store the userID 
+        - define the signUp and signIn actions
+    - Define the signUp and signIn actions:
+        - These should send the request to the backend using Axios/VueResource 
+            - Request should append auth-based URI's to the root endpoint 
+        - The result of this request should be stored using a 'mutation'
+    - The mutations should store the token(s) into the Vuex state property 
+        - This will allow us to use the token and userId in subsequent 
+          requests in other components. 
+        
+
+    var VueResource = require('vue-resource');
+    Vue.use(VueResource);
+
+    {
+        state: {
+            userID: "",
+            token: ""
+        },
+        mutations: {
+            ...
+        },
+        actions: {
+            signUp: function (formData) {
+                this.$http.post("<url>", formData)
+            },
+            signIn: function (formData) {
+                this.$http.post("<url>", formData)
+            }
+        }
+    }
+
+
+    var vuexInstance = require(vuexObject);
+    {
+        el: "#registerForm",
+        data: {
+            email,
+            password, 
+            repeatPassword,
+            username 
+        }
+        methods: {
+            register() {
+                formData = {
+                    email: this.email,
+                    password: this.password,
+                    rePass: this.repeatPassword,
+                    username: this.username
+                }
+                vuexInstance.actions.dispatch('signUp', formData);
+            }
+        }
+    }
