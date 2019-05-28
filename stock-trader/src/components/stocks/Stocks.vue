@@ -15,7 +15,7 @@ import Stock from './Stock.vue';
 export default {
     computed: {
         stocks() {
-            return this.$store.getters.stocks;
+            return this.$store.getters.marketStocks;
         }
     },
     components: {

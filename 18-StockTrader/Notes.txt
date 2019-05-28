@@ -31,34 +31,23 @@
 
 
 ------ SETTING UP VUEX STATE MANAGEMENT 
-STORE DESIGN:
-- Modules: 
-    - Stocks 
-        - state: 
-            - stocks: 
-                - stock: 
-                    - price 
-                    - name 
-            - orders: 
-                - order: 
-                    - quantity 
-                    - stockPrice 
-                    - stockName 
-        - actions: 
-            buyStock: ({commit}, order) => {
-                commit();
-            },
-            setStocks: ({commit}) => {
-                commit('SET_STOCKS');
-            }
-
-    - Portfolio 
-        - state: 
-            - stocks: 
-                - stock: 
-                    - price 
-                    - name
-                    - quantity 
-            - money 
-        - actions: 
-
+- When designing a store you should think through: 
+1) STATE: What needs to be stored in application state?
+    - What are the main modules/features/pages of our app? 
+    - which components make up the modules?  
+    - How can we organize state properties be stored according to the separate modules?
+2) MUTATIONS: How should these state properties be mutated? How do they get changed?
+    - How do we add data to these fields? 
+    - How do we subtract data? 
+    - How do we initialize data?
+    - How do we set data? 
+    - Does the data need to be randomized or sorted?
+3) ACTIONS: What data needs to be passed to the mutation?
+    - What data needs to be passed to the mutation?
+    - Where do we get the data that needs to be passed?
+    - What component(s) trigger the update(s)? 
+    - How should these updates be triggered/called within the components?
+4) GETTERS: What needs to be pulled from application state?
+    - What state information needs to be shown to the user? 
+    - Where does this information need to be shown? Which components? 
+    - How does this information need to be formatted? 

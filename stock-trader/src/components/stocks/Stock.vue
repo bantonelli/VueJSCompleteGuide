@@ -2,32 +2,34 @@
     <div class="col-sm-6 col-md-4">
         <div class="panel panel-success">
             <div class="panel-heading">
-                <h3 class="panel-title">{{stock.name}} <span style="font-size: 1rem;">(Price: {{stock.price}})</span></h3> 
+                <h3 class="panel-title">{{stock.name}} <span style="font-size: 1rem;">(Price: {{stock.price}})</span> <span class="small" style="color: red;">{{ insufficientFunds ? "Insufficient Funds" : "" }}</span></h3> 
             </div>
             <div class="panel-body">
-                    <div class="pull-left">
-                        <!-- <label for="inputPassword2" class="sr-only">Password</label> -->
-                        <input 
-                            type="number" 
-                            min="0"
-                            class="form-control" 
-                            id="inputPassword2" 
-                            v-model="quantity"
-                        >
-                    </div>
-                    <button  
-                        class="btn btn-success pull-right mb-1"
-                        :disabled="quantity <= 0"
-                        @click="purchaseOrder"
+                <div class="pull-left" style="width: 40%;">
+                    <!-- <label for="inputPassword2" class="sr-only">Password</label> -->
+                    <input 
+                        type="number" 
+                        min="0"
+                        class="form-control" 
+                        id="inputPassword2" 
+                        v-model="quantity"
                     >
-                        Buy
-                    </button>
+                </div>                    
+                <button  
+                    class="btn btn-success pull-right mb-1"
+                    :disabled="quantity <= 0 || insufficientFunds"
+                    @click="purchaseOrder"
+                >
+                    Buy
+                </button>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import {mapGetters} from 'vuex';
+
 export default {
     props: ['stock'],
     data() {
@@ -44,6 +46,14 @@ export default {
                 stockId: this.stock.id
             }
             this.$store.dispatch('buyStock', order);
+        }
+    }, 
+    computed: {
+        ...mapGetters([
+            'funds'
+        ]),
+        insufficientFunds() {
+            return this.quantity * this.stock.price > this.funds;
         }
     }
 }

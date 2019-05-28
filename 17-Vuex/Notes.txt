@@ -327,3 +327,29 @@ GLOBAL MUTATIONS:
     - This will indicate that the mutation specified is on the root store. 
     EXAMPLE: 
         commit('someMutation', null, {root: true});
+
+
+
+------ CORE VUEX CONCEPTS 
+- Uses Flux pattern for managing state and communications between 
+  front-end components 
+- STATE: 
+    - contains the application state 
+- MUTATIONS: 
+    - change the state - and they are the only way to change it.
+    - Determines HOW the state is changed. 
+        - Push new object 
+        - Randomize objects 
+        - Remove object from array
+        - Increment number 
+        - etc.  
+    -> cannot be async 
+- ACTIONS: 
+    - commit mutations 
+        - Sends data to the mutation, and mutation uses the data     to change the state in some way. 
+    - Usually is the thing reaching out to the backend services 
+    - basically invoke async actions that commit mutations when 
+      the async code is completed. 
+    -> can be async
+- GETTERS: 
+    - return specific parts of the state for component usage. 

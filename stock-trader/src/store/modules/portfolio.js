@@ -6,6 +6,7 @@ export default {
     mutations: {
         'BUY_STOCK' (state, {stockId, quantity, stockPrice}) {
             // Find method will look for a record and return it if match is true
+            var quantity = parseInt(quantity)
             const record = state.stocks.find(element => element.id == stockId);
             if (record) {
                 record.quantity += quantity;
@@ -18,6 +19,7 @@ export default {
             state.funds -= stockPrice * quantity;
         },
         'SELL_STOCK' (state, {stockId, quantity, stockPrice}) {
+            var quantity = parseInt(quantity);
             const record = state.stocks.find(element => element.id == stockId);
             if (record.quantity > quantity) {
                 record.quantity -= quantity;
@@ -28,10 +30,22 @@ export default {
         }
     },
     getters: {
-        stockPortfolio (state, getters) {
+        stockPortfolio (state, getters, rootState) {
+            // Getters is the rootGetters 
             return state.stocks.map(stock => {
-                const record = getters.marketStocks.find(element => marketStock.id == stock.id);
+                // Map our owned stocks to a new record that shows all the stock data 
+                // Should show the market price and market name 
+                const record = getters.marketStocks.find(marketStock => marketStock.id == stock.id);
+                return {
+                    id: stock.id,
+                    quantity: stock.quantity,
+                    name: record.name, 
+                    price: record.price
+                }
             });
+        },
+        funds(state) {
+            return state.funds;
         }
     },
     actions: {

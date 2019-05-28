@@ -9,9 +9,6 @@ export default {
         },
         'RND_STOCKS': (state) => {
             
-        },
-        'BUY_STOCKS': (state, order) => {
-
         }
     },
     actions : {
