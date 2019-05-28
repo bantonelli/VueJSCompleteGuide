@@ -2,21 +2,21 @@ export default [
     {
         id: 1,
         name: "BMW",
-        price: 10
+        price: 120
     },
     {
         id: 2,
         name: "Google",
-        price: 10
+        price: 300
     },
     {
         id: 3,
         name: "Apple",
-        price: 10
+        price: 250
     },
     {
         id: 4,
         name: "Twitter",
-        price: 10
+        price: 80
     }
 ];
