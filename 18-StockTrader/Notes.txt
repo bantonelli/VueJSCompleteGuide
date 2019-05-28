@@ -1,0 +1,64 @@
+------ PROJECT SETUP AND PLANNING 
+- Start project with Vue-cli webpack-simple template 
+- Install babel-preset-stage-2 
+    - Use this in .babelrc
+
+- PROJECT ORGANIZATION: 
+    - Components: 
+        - Header 
+        - Choose components to be granular enough 
+    - Routes: 
+        - Home Page 
+        - Stocks Page
+            - Buy stocks here  
+        - Portfolio Page 
+            - Look at stocks we own and sell them 
+
+- DEVELOPMENT PROCESS: 
+    1) Plan Routes 
+    2) Plan Components 
+    3) Integrate Vuex Store 
+    4) Connect to backend / Set up dummy data 
+
+
+------ STOCKS COMPONENT 
+- Show price 
+- Show Name 
+- Buy Button 
+- Quantity Input field 
+- Use card styling from bootstrap
+- Use Green button from bootstrap 
+
+
+------ SETTING UP VUEX STATE MANAGEMENT 
+STORE DESIGN:
+- Modules: 
+    - Stocks 
+        - state: 
+            - stocks: 
+                - stock: 
+                    - price 
+                    - name 
+            - orders: 
+                - order: 
+                    - quantity 
+                    - stockPrice 
+                    - stockName 
+        - actions: 
+            buyStock: ({commit}, order) => {
+                commit();
+            },
+            setStocks: ({commit}) => {
+                commit('SET_STOCKS');
+            }
+
+    - Portfolio 
+        - state: 
+            - stocks: 
+                - stock: 
+                    - price 
+                    - name
+                    - quantity 
+            - money 
+        - actions: 
+
