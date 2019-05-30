@@ -59,3 +59,36 @@
   mutation.  
 - Then called the randomizeStocks action on 
   button click.  
+
+
+
+------ ANIMATING BETWEEN ROUTE TRANSITIONS 
+- Add a <transition></transition> tag in the 
+  main route (App.vue)
+    - This tag should be used similar to router-view. 
+
+- Add name attribute of the transition tag 
+    - This will be used to generate the classes for the animation 
+    EXAMPLE: <transition name="thing"><router-view></router-view></transition>
+        - Produces CSS classes such as: 
+            .thing-enter-active {...}
+            .thing-leave-active {...}
+
+- Add mode attribute to transition tag 
+
+- Add CSS: 
+    - Fill out animation properties for the classes above 
+    - set up @keyframes for those animations 
+
+EXAMPLE: 
+    <transition>
+        <router-view></router-view>
+    </transition>
+     
+
+------ SAVING AND FETCHING DATA - GETTING DROPDOWN TO WORK 
+- Basically we just conditionally bind the .open class 
+  from bootstrap to open up the dropdown 
+
+
+------ SETTING UP VUE-RESOURCE AND FIREBASE 
