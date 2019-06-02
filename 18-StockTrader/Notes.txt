@@ -100,12 +100,21 @@ EXAMPLE:
 
 ------ SAVING DATA (PUT REQUEST)
 - When ever you are saving application state data: 
-    1) its best to store data in the store and update it as used 
-    2) when saving you basically should just send it to a database on the backend 
-    3) send the data to the database in a component itself 
+    1) Load data and app from backend 
+    2) As application is used store data in the store and update on front-end 
+    3) Then when saving to persistence storage you should just 
+       send the data to the database via a component  
         - Use vuex getters to get relevant state data that needs to be saved. 
+        - Then after getters fetch state information use component to send 
+          data to database 
     4) ALTERNATE APPROACH: 
         - If data is application-wide and NOT saved automatically 
-            - You can use the approach of doing HTTP calls to backend all within 
-              store actions. 
+            - You can use the approach of doing HTTP calls to backend 
+              all within store actions. 
 
+
+------ FETCHING/LOADING DATA (GET REQUEST)
+- When loading data you can do this through an action 
+- The action should make the HTTP request 
+    - Then commit that data to the store via mutations. 
+    
